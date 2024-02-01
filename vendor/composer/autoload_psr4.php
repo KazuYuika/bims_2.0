@@ -23,5 +23,6 @@ return array(
     'Carbon\\' => array($vendorDir . '/nesbot/carbon/src/Carbon'),
     'Brick\\Math\\' => array($vendorDir . '/brick/math/src'),
     'App\\Models\\' => array($baseDir . '/app/Models'),
+    'App\\Http\\Middleware\\' => array($baseDir . '/app/Http/Middleware'),
     'App\\Controllers\\' => array($baseDir . '/app/Controllers'),
 );

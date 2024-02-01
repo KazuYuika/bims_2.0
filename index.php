@@ -6,9 +6,12 @@ $request = $_SERVER['REQUEST_URI'];
 $path = parse_url($request, PHP_URL_PATH);
 $path = preg_replace('/^index\.php\//', '', $path);
 $path = ltrim($path, '/');
+require_once 'app\helper\helpers.php';
 
 use App\Models\ConfigModel;
+use App\Http\Middleware\AuthMiddleware;
 
+$authMiddleware = new AuthMiddleware();
 $authController = new App\Controllers\AuthController();
 
 require 'config.php';
@@ -26,7 +29,7 @@ require 'config.php';
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
     <link rel="stylesheet" href="https://kit-pro.fontawesome.com/releases/v5.12.1/css/pro.min.css">
-
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="resources/js/tailwindcss.js"></script>
     <script src="tailwind.config.js"></script>
     <title><?php echo $path . ' | ' . ConfigModel::get('name'); ?></title>
@@ -53,12 +56,16 @@ $router->post('/signup', function () use ($authController) {
     $authController->signup();
 });
 
-$router->post('/logout', function () use ($authController) {
+$router->get('/logout', function () use ($authController) {
     $authController->logout();
 });
 
-$router->get('/dashboard', function () {
-    require $_SERVER['DOCUMENT_ROOT'] . '/resources/views/dashboard.php';
+
+$router->before('GET', '/dashboard', function () use ($authMiddleware) {
+    return $authMiddleware->handle(function () {
+        // The actual route handling logic for /dashboard
+        require $_SERVER['DOCUMENT_ROOT'] . '/resources/views/dashboard.php';
+    });
 });
 
 
