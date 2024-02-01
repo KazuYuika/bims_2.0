@@ -1,4 +1,5 @@
 <?php
+session_start();
 require 'vendor/autoload.php';
 $router = new \Bramus\Router\Router();
 $request = $_SERVER['REQUEST_URI'];
@@ -7,6 +8,8 @@ $path = preg_replace('/^index\.php\//', '', $path);
 $path = ltrim($path, '/');
 
 use App\Models\ConfigModel;
+
+$authController = new App\Controllers\AuthController();
 
 require 'config.php';
 ?>
@@ -20,6 +23,10 @@ require 'config.php';
     <link rel="shortcut icon" href="resources/img/favicon.ico">
     <link rel="apple-touch-icon" sizes="76x76" href="apple-icon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+    <link rel="stylesheet" href="https://kit-pro.fontawesome.com/releases/v5.12.1/css/pro.min.css">
+
     <script src="resources/js/tailwindcss.js"></script>
     <script src="tailwind.config.js"></script>
     <title><?php echo $path . ' | ' . ConfigModel::get('name'); ?></title>
@@ -30,11 +37,30 @@ require 'config.php';
 $router->get('/', function () {
     require $_SERVER['DOCUMENT_ROOT'] . '/resources/views/home.php';
 });
-$router->get('/login', function () {
-    require $_SERVER['DOCUMENT_ROOT'] . '/resources/views/auth/login.php';
-});
-$router->get('/signup', function () {
-    require $_SERVER['DOCUMENT_ROOT'] . '/resources/views/auth/signup.php';
+
+$router->get('/login', function () use ($authController) {
+    $authController->showLoginForm();
 });
 
+$router->post('/login', function () use ($authController) {
+    $authController->login();
+});
+
+$router->get('/signup', function () use ($authController) {
+    $authController->showSignupFrom();
+});
+$router->post('/signup', function () use ($authController) {
+    $authController->signup();
+});
+
+$router->post('/logout', function () use ($authController) {
+    $authController->logout();
+});
+
+$router->get('/dashboard', function () {
+    require $_SERVER['DOCUMENT_ROOT'] . '/resources/views/dashboard.php';
+});
+
+
 $router->run();
+?>
