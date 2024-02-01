@@ -1,0 +1,20 @@
+RewriteEngine On
+
+# Redirect CSS requests to 'resources/css' folder
+RewriteCond %{REQUEST_URI} \.css$ [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ resources/css/$1 [L,QSA]
+
+# Redirect JS requests to 'resources/js' folder
+RewriteCond %{REQUEST_URI} \.js$ [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ resources/js/$1 [L,QSA]
+
+# Redirect image requests to 'resources/img' folder
+RewriteCond %{REQUEST_URI} \.(jpg|jpeg|png|gif|svg|ico)$ [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ resources/img/$1 [L,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . index.php [L]
